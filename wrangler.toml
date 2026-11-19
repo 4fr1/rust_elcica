@@ -2,6 +2,12 @@ name = "rust_elcica"
 main = "build/worker/shim.mjs"
 compatibility_date = "2024-01-01"
 
+# Hubungkan Worker langsung ke domain elcica.xyz
+routes = [
+  { pattern = "elcica.xyz/*", zone_name = "elcica.xyz" },
+  { pattern = "*.elcica.xyz/*", zone_name = "elcica.xyz" }
+]
+
 [build]
 command = "cargo install -q worker-build && worker-build --release"
 
