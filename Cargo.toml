@@ -1,12 +1,11 @@
 [package]
 name = "tes_elcica"
 version = "0.1.0"
-edition = "2024"
+edition = "2026"
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-
 [dependencies]
-axum = "0.8.9"
-tokio = { version = "1.54.1", features = ["full"] }
 worker = "0.9.0"
+
