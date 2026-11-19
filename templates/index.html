@@ -44,6 +44,23 @@
             border-radius: 6px;
             margin-top: 15px;
         }
+/* Efek Kursor Kedip */
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1.1em;
+    background-color: var(--accent-color);
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+
     </style>
 </head>
 <body>
@@ -58,11 +75,20 @@
             <p>Powered by Rust 🦀 + WebAssembly + Cloudflare Workers</p>
         </div>
 
-        <p class="prompt" style="margin-top: 30px;">$ echo "Let's connect"</p>
-        <p>
-            <a href="https://github.com" target="_blank">[GitHub]</a> 
-            <a href="https://cloudflare.com" target="_blank">[Cloudflare]</a>
-        </p>
+<p class="prompt" style="margin-top: 30px;">
+    $ echo "Let's connect"
+</p>
+<p>
+    <a href="https://github.com/4fr1" target="_blank">[GitHub]</a> 
+    <a href="https://cloudflare.com" target="_blank">[Cloudflare]</a>
+</p>
+
+<!-- Baris prompt aktif dengan kursor berkedip -->
+<p class="prompt" style="margin-top: 20px;">
+    guest@elcica:~$ <span class="cursor"></span>
+</p>
+
+ 
     </div>
 </body>
 </html>
