@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ domain }} - Terminal</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #58a6ff;
+            --accent-color: #3fb950;
+            --dim-color: #8b949e;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 650px;
+            width: 100%;
+        }
+        .header {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        .prompt {
+            color: var(--dim-color);
+        }
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .card {
+            border: 1px solid #30363d;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p class="header">> status --check</p>
+        <p>[OK] System online on <span style="color:#fff;">{{ domain }}</span></p>
+        
+        <div class="card">
+            <p class="prompt">$ cat about.txt</p>
+            <p>{{ message }}</p>
+            <p class="prompt">$ cat stack.txt</p>
+            <p>Powered by Rust 🦀 + WebAssembly + Cloudflare Workers</p>
+        </div>
+
+        <p class="prompt" style="margin-top: 30px;">$ echo "Let's connect"</p>
+        <p>
+            <a href="https://github.com" target="_blank">[GitHub]</a> 
+            <a href="https://cloudflare.com" target="_blank">[Cloudflare]</a>
+        </p>
+    </div>
+</body>
+</html>
