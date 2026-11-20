@@ -1,9 +1,9 @@
-cat << "EOF" > src/lib.rs
+
 use worker::*;
 
 #[event(fetch)]
 pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Response> {
     Response::ok("ELCICA Syndicate Core is Online")
 }
-EOF
+
 
