@@ -18,8 +18,8 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Install worker-build
-        run: cargo install worker-build --version 0.0.10
+       - name: Install worker-build
+        run: cargo install worker-build
 
       - name: Install Wrangler
         run: npm install -g wrangler
