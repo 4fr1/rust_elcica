@@ -44,7 +44,7 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
   ]
 }"#;
             let mut headers = Headers::new();
-            headers.set("content-type", "application/json")?;
+            let _ = headers.set("content-type", "application/json");
             Ok(Response::from_body(ResponseBody::Body(manifest.as_bytes().to_vec()))?.with_headers(headers))
         })
         
@@ -95,7 +95,7 @@ self.addEventListener("fetch", (event) => {
 });
 "#;
             let mut headers = Headers::new();
-            headers.set("content-type", "application/javascript")?;
+            let _ = headers.set("content-type", "application/javascript");
             Ok(Response::from_body(ResponseBody::Body(sw_script.as_bytes().to_vec()))?.with_headers(headers))
         })
         .run(req, &env)
