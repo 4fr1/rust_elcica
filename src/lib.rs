@@ -1,3 +1,4 @@
+cat << 'EOF' > src/lib.rs
 use askama::Template;
 use worker::*;
 
@@ -12,7 +13,6 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
     let router = Router::new();
 
     router
-        // 1. Route Utama (HTML Askama)
         .get_async("/", |_req, _ctx| async move {
             let template = IndexTemplate { title: "Home" };
             match template.render() {
@@ -20,8 +20,6 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
                 Err(_) => Response::error("Internal Server Error", 500),
             }
         })
-        
-        // 2. Route PWA Manifest (`/manifest.json`)
         .get("/manifest.json", |_req, _ctx| {
             let manifest = r#"{
   "name": "ELCICA Ecosystem",
@@ -44,39 +42,30 @@ pub async fn main(req: Request, env: Env, _ctx: worker::Context) -> Result<Respo
   ]
 }"#;
             let mut headers = Headers::new();
-            let _ = headers.set("content-type", "application/json");
+            let _ = headers.set("Content-Type", "application/json");
             Ok(Response::from_body(ResponseBody::Body(manifest.as_bytes().to_vec()))?.with_headers(headers))
         })
-        
-        // 3. Route PWA Service Worker (`/sw.js`)
         .get("/sw.js", |_req, _ctx| {
             let sw_script = r#"
 const CACHE_NAME = "elcica-v1";
-const ASSETS_TO_CACHE = [
-  "/",
-  "/manifest.json"
-];
+const ASSETS_TO_CACHE = ["/", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
         cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
+          if (cache !== CACHE_NAME) return caches.delete(cache);
         })
-      );
-    })
+      )
+    )
   );
   self.clients.claim();
 });
@@ -84,21 +73,17 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => {
-        return caches.match("/");
-      });
+      return cachedResponse || fetch(event.request).catch(() => caches.match("/"));
     })
   );
 });
 "#;
             let mut headers = Headers::new();
-            let _ = headers.set("content-type", "application/javascript");
+            let _ = headers.set("Content-Type", "application/javascript");
             Ok(Response::from_body(ResponseBody::Body(sw_script.as_bytes().to_vec()))?.with_headers(headers))
         })
         .run(req, &env)
         .await
 }
+EOF
 
