@@ -1,4 +1,4 @@
-cat << 'EOF' > src/lib.rs
+cat << "EOF" > src/lib.rs
 use worker::*;
 
 #[event(fetch)]
