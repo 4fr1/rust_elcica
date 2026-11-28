@@ -22,6 +22,14 @@ pub async fn main(
             "version": "0.1.0"
         })),
 
+        // Halaman admin sekarang dilayani auth.elcica.xyz.
+        (Method::Get, "/admin") => {
+            let mut res = Response::empty()?;
+            res.headers_mut()
+                .set("Location", "https://auth.elcica.xyz/login")?;
+            Ok(res.with_status(302))
+        }
+
         _ => {
             let page = IndexTemplate {
                 title: "ELCICA",
