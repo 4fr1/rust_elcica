@@ -1,4 +1,3 @@
-
 use askama::Template;
 use worker::*;
 
@@ -10,17 +9,28 @@ struct IndexTemplate {
 
 #[event(fetch)]
 pub async fn main(
-    _req: Request,
+    req: Request,
     _env: Env,
     _ctx: worker::Context,
 ) -> Result<Response> {
-    let page = IndexTemplate {
-        title: "ELCICA",
-    };
+    let url = req.url()?;
 
-    match page.render() {
-        Ok(html) => Response::from_html(html),
-        Err(_err) => Response::error("Internal Server Error", 500),
+    match (req.method(), url.path()) {
+        (Method::Get, "/health") => Response::from_json(&serde_json::json!({
+            "app": "elcica",
+            "status": "ok",
+            "version": "0.1.0"
+        })),
+
+        _ => {
+            let page = IndexTemplate {
+                title: "ELCICA",
+            };
+
+            match page.render() {
+                Ok(html) => Response::from_html(html),
+                Err(_err) => Response::error("Internal Server Error", 500),
+            }
+        }
     }
 }
-
