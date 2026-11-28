@@ -2,11 +2,11 @@ name = "rust_elcica"
 main = "build/worker/shim.mjs"
 compatibility_date = "2024-01-01"
 
-# Hubungkan Worker langsung ke domain elcica.xyz
-routes = [
-  { pattern = "elcica.xyz/*", zone_name = "elcica.xyz" } 
-]
+# Worker ini menjadi origin-nya sendiri -> pakai Custom Domain, bukan route /*.
+# Cloudflare akan membuat DNS record + sertifikat untuk elcica.xyz.
+[[routes]]
+pattern = "elcica.xyz"
+custom_domain = true
 
 [build]
 command = "cargo install -q worker-build && worker-build --release"
-
