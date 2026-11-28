@@ -1,0 +1,53 @@
+name: Cloudflare preflight (baca saja)
+
+# Manual dari tab Actions → "Run workflow".
+# TIDAK mengubah apa pun: hanya GET zone, DNS record, dan Worker route.
+# Token/account ID diambil dari GitHub Secrets repo ini dan tidak pernah dicetak.
+
+on:
+  workflow_dispatch:
+
+env:
+  ZONE_NAME: elcica.xyz
+
+jobs:
+  preflight:
+    name: Periksa DNS + Worker route elcica.xyz
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pastikan secret tersedia
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          test -n "$CF_ACCOUNT_ID" || { echo "CF_ACCOUNT_ID belum diset di GitHub Secrets"; exit 1; }
+          test -n "$CF_API_TOKEN" || { echo "CF_API_TOKEN belum diset di GitHub Secrets"; exit 1; }
+
+      - name: Baca zone, DNS, dan route
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          API="https://api.cloudflare.com/client/v4"
+          AUTH=(-H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json")
+
+          zones_json=$(curl -fsS "${AUTH[@]}" "$API/zones?name=$ZONE_NAME")
+          zone_id=$(echo "$zones_json" | jq -r '.result[0].id // empty')
+          test -n "$zone_id" || { echo "Zone $ZONE_NAME tidak ditemukan/token tidak punya akses"; exit 1; }
+          echo "Zone ditemukan (id: ${zone_id:0:6}...)."
+
+          echo ""
+          echo "=== DNS records ==="
+          echo "TYPE    NAME                 CONTENT                         PROXIED"
+          curl -fsS "${AUTH[@]}" "$API/zones/$zone_id/dns_records?per_page=100" \
+            | jq -r '.result[] | [.type, .name, .content, (.proxied|tostring)] | @tsv'
+
+          echo ""
+          echo "=== Worker routes ==="
+          echo "ID                                      PATTERN                 SCRIPT"
+          curl -fsS "${AUTH[@]}" "$API/zones/$zone_id/workers/routes" \
+            | jq -r '.result[] | [.id, .pattern, .script] | @tsv'
+
+          echo ""
+          echo "Selesai. Tidak ada perubahan yang dilakukan."
